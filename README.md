@@ -1,14 +1,5 @@
 # Cisco IOS-XE Service-Provider MPLS
 ## Principal Architect Guide - SP Edition
-### README - MPLS L3VPN, L2VPN, EVPN, Internet Edge, QoS SP
-
-| Atribut | Detail |
-|---|---|
-| Judul | Cisco IOS-XE Service-Provider MPLS, L3VPN, L2VPN, EVPN, Internet Edge |
-| OS | Cisco IOS-XE 17.12.x / 17.15.x, Autonomous Mode, bukan IOS Classic, bukan IOS-XR |
-| Platform SP | Catalyst 9500, 9600, ASR 1000-X, ISR 1100 / 4000, Catalyst 8200 sebagai CE |
-| Versi | v3.0 SP Only, Edisi SP Murni |
-| Prinsip | Tidak ada commit di IOS-XE. Cara aman: archive + configure replace + reload in |
 
 > Aturan wajib SP: `license boot level network-advantage` jangan skip. Tanpa itu BGP, MPLS, EVPN tidak jalan.
 
@@ -18,8 +9,6 @@ write memory
 reload
 show license summary
 ```
-
----
 
 ## Daftar Isi SP Edition
 
