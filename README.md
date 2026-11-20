@@ -1,15 +1,6 @@
 # Cisco IOS-XE Service-Provider MPLS
 ## Principal Architect Guide - SP Edition
 
-> Aturan wajib SP: `license boot level network-advantage` jangan skip. Tanpa itu BGP, MPLS, EVPN tidak jalan.
-
-```
-license boot level network-advantage
-write memory
-reload
-show license summary
-```
-
 ## Daftar Isi SP Edition
 
 - Bab 1: Arsitektur Service-Provider, Platform & Licensing
@@ -58,6 +49,15 @@ Keputusan Principal: P pakai 9500 / 9600. PE utama pakai ASR 1000-X karena QFP d
 | Network-Advantage | OSPF full, BGP full, MPLS LDP, MPLS L3VPN, MPLS L2VPN, EVPN, VRF, Multicast |
 
 Cek di semua P, PE, RR, ASBR sebelum go-live. Satu perangkat tanpa network-advantage bisa bikin seluruh layanan customer di POP itu gagal.
+
+Aturan wajib SP: `license boot level network-advantage` jangan skip. Tanpa itu BGP, MPLS, EVPN tidak jalan.
+
+```
+license boot level network-advantage
+write memory
+reload
+show license summary
+```
 
 ### 1.4 Golden Image SP
 
