@@ -23,16 +23,16 @@ show license summary
 
 ## Daftar Isi SP Edition
 
-**Bab 1:** Arsitektur Service-Provider, Platform & Licensing
-**Bab 2:** Underlay SP, OSPF + BFD + MPLS LDP + BGP Route Reflector
-**Bab 3:** MPLS L3VPN, VRF, RD / RT, PE-CE BGP / OSPF / Static
-**Bab 4:** MPLS L2VPN & EVPN untuk SP, VPWS, VPLS, EVPN DCI
-**Bab 5:** Internet Edge, ASBR, BGP Filtering, RPKI, Bogon, Anti Spoofing
-**Bab 6:** QoS Service-Provider, Gold / Silver / Bronze, MPLS EXP
-**Bab 7:** High Availability SP, Redundancy, ISSU, Fast Reroute
-**Bab 8:** Operasi SP, SLA, Monitoring, Telemetry, Automation, NOC Playbook
-**Bab 9:** STUDI KASUS ISP, Implementasi Full P / PE / RR / ASBR / CE
-**Appendix:** Perintah Verifikasi Cepat & Safe Change Template SP
+- Bab 1: Arsitektur Service-Provider, Platform & Licensing
+- Bab 2: Underlay SP, OSPF + BFD + MPLS LDP + BGP Route Reflector
+- Bab 3: MPLS L3VPN, VRF, RD / RT, PE-CE BGP / OSPF / Static
+- Bab 4: MPLS L2VPN & EVPN untuk SP, VPWS, VPLS, EVPN DCI
+- Bab 5: Internet Edge, ASBR, BGP Filtering, RPKI, Bogon, Anti Spoofing
+- Bab 6: QoS Service-Provider, Gold / Silver / Bronze, MPLS EXP
+- Bab 7: High Availability SP, Redundancy, ISSU, Fast Reroute
+- Bab 8: Operasi SP, SLA, Monitoring, Telemetry, Automation, NOC Playbook
+- Bab 9: STUDI KASUS ISP, Implementasi Full P / PE / RR / ASBR / CE
+- Appendix:** Perintah Verifikasi Cepat & Safe Change Template SP
 
 ---
 
