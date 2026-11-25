@@ -1099,41 +1099,7 @@ interface GigabitEthernet0/0/0
  no shutdown
 ```
 
-### 8.4 Automation SP
-
-Tidak diperkenankan SSH dan paste config manual untuk 100 PE. Gunakan template per role.
-
-Struktur:
-
-```
-inventory/
- group_vars/
- pe.yml
- p.yml
- rr.yml
-templates/
- pe-asr.j2
- p-9500.j2
-playbooks/
- deploy-pe.yml
- add-customer.yml
-```
-
-Tambah customer baru: buat VRF di 2 PE saja, tidak perlu ubah P atau RR. Jika tambah customer butuh ubah P, desain salah.
-
-### 8.5 NOC Playbook, Troubleshooting 5 Langkah
-
-Gunakan urutan ini setiap insiden:
-
-1. Fisik dan Link: `show interfaces status`, `show interfaces counters errors`, `show log`
-2. Underlay: `show ip ospf neighbor`, `show ip route`, `show bfd neighbors`
-3. MPLS / EVPN: `show mpls ldp neighbor`, `show bgp vpnv4 unicast summary`, `show bgp l2vpn evpn summary`, `show nve peers`
-4. VRF / Policy: `show ip route vrf`, `show ip vrf detail`, `show policy-map interface`
-5. Endpoint: `show mac address-table`, `show ip arp vrf`, `ping vrf`, `traceroute vrf`
-
-Dokumentasikan setiap insiden: gejala, perintah yang dipakai, root cause, fix, pencegahan.
-
-### 8.6 Security SP
+### 8.4 Security SP
 
 - uRPF di PE-CE dan ASBR, sudah di Modul 5.
 - BGP TTL Security di PE-CE dan RR: `neighbor 192.168.255.1 ttl-security hops 1`
