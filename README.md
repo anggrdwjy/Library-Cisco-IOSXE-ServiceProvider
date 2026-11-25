@@ -1,34 +1,31 @@
-# Cisco IOS-XE Service-Provider MPLS
-## Principal Architect Guide - SP Edition
+# Cisco IOS-XE - Implementation & Operations Guide
 
-## Daftar Isi SP Edition
+## Daftar Isi
 
-- Bab 1: Arsitektur Service-Provider, Platform & Licensing
-- Bab 2: Underlay SP, OSPF + BFD + MPLS LDP + BGP Route Reflector
-- Bab 3: MPLS L3VPN, VRF, RD / RT, PE-CE BGP / OSPF / Static
-- Bab 4: MPLS L2VPN & EVPN untuk SP, VPWS, VPLS, EVPN DCI
-- Bab 5: Internet Edge, ASBR, BGP Filtering, RPKI, Bogon, Anti Spoofing
-- Bab 6: QoS Service-Provider, Gold / Silver / Bronze, MPLS EXP
-- Bab 7: High Availability SP, Redundancy, ISSU, Fast Reroute
-- Bab 8: Operasi SP, SLA, Monitoring, Telemetry, Automation, NOC Playbook
-- Bab 9: STUDI KASUS ISP, Implementasi Full P / PE / RR / ASBR / CE
-- Appendix:** Perintah Verifikasi Cepat & Safe Change Template SP
+- Modul 1: Arsitektur Service-Provider, Platform & Licensing
+- Modul 2: Underlay SP, OSPF + BFD + MPLS LDP + BGP Route Reflector
+- Modul 3: MPLS L3VPN, VRF, RD / RT, PE-CE BGP / OSPF / Static
+- Modul 4: MPLS L2VPN & EVPN untuk SP, VPWS, VPLS, EVPN DCI
+- Modul 5: Internet Edge, ASBR, BGP Filtering, RPKI, Bogon, Anti Spoofing
+- Modul 6: QoS Service-Provider, Gold / Silver / Bronze, MPLS EXP
+- Modul 7: High Availability SP, Redundancy, ISSU, Fast Reroute
+- Modul 8: Operasi SP, SLA, Monitoring, Telemetry, Automation, NOC Playbook
+- Modul 9: STUDI KASUS ISP, Implementasi Full P / PE / RR / ASBR / CE
 
----
 
-## Bab 1: Arsitektur Service-Provider, Platform & Licensing
+## Modul 1: Arsitektur Service-Provider, Platform & Licensing
 
-### 1.1 Prinsip SP yang Beda dari Enterprise
+### 1.1 Prinsip SP yang Berbeda dari Enterprise
 
-Di Enterprise, semua router tahu VRF. Di SP, hanya PE yang tahu VRF. P tidak boleh tahu VRF. Ini yang bikin SP bisa skala ribuan customer.
+Pada lingkungan Enterprise, semua router mengetahui VRF. Pada SP, hanya PE yang mengetahui VRF. P tidak diperkenankan mengetahui VRF. Hal tersebut memungkinkan SP mencapai skala ribuan customer.
 
-| Prinsip SP | Artinya | Dampak Jika Dilanggar |
+| Prinsip SP | Artinya | Dampak Apabila Dilanggar |
 |---|---|---|
-| P hanya tahu Loopback dan Label | P hanya OSPF + LDP | P overload, core tidak scalable |
-| PE yang tahu VRF | PE yang punya RD, RT, VRF | Isolasi customer terjaga |
-| RR yang tahu semua VPNv4 | RR reflect route, tidak forward traffic | PE tidak perlu full mesh |
-| Customer tidak lihat Core | CE hanya lihat PE sebagai next-hop | Keamanan dan simplicity |
-| Internet di VRF terpisah | VRF INTERNET terpisah dari L3VPN | Internet flapping tidak ganggu L3VPN |
+| P hanya mengetahui Loopback dan Label | P hanya menjalankan OSPF + LDP | P overload, core tidak scalable |
+| PE yang mengetahui VRF | PE yang memiliki RD, RT, VRF | Isolasi customer terjaga |
+| RR yang mengetahui semua VPNv4 | RR melakukan reflect terhadap route, tidak melakukan forwarding traffic | PE tidak memerlukan full mesh |
+| Customer tidak melihat Core | CE hanya melihat PE sebagai next-hop | Security dan simplicity |
+| Internet di VRF terpisah | VRF INTERNET terpisah dari L3VPN | Internet flapping tidak mengganggu L3VPN |
 
 ### 1.2 Platform SP
 
@@ -38,19 +35,19 @@ Di Enterprise, semua router tahu VRF. Di SP, hanya PE yang tahu VRF. P tidak bol
 | Catalyst 9500 | P, PE Lite, PE Agregasi | TwentyFiveGigE1/0/1 | P 25G / 100G, PE agregasi |
 | ASR 1000-X | PE Utama, ASBR, Border | TenGigabitEthernet0/0/0, GigabitEthernet0/0/0 | PE MPLS, Internet Edge, Agregasi |
 | ISR 1100 / 4000 | CE, CPE Customer | GigabitEthernet0/0/0 | CE customer kecil |
-| Catalyst 8200 | CE, CPE Customer Menengah | GigabitEthernet0/0/0 | CE customer menengah, cabang |
+| Catalyst 8200 | CE, CPE Customer Menengah | GigabitEthernet0/0/0 | CE customer menengah, branch |
 
-Keputusan Principal: P pakai 9500 / 9600. PE utama pakai ASR 1000-X karena QFP dan skala VRF besar. CE pakai ISR / 8200 karena murah dan cukup untuk PE-CE.
+Keputusan Principal: P gunakan 9500 / 9600. PE utama gunakan ASR 1000-X karena QFP dan skala VRF besar. CE gunakan ISR / 8200 karena ekonomis dan memadai untuk PE-CE.
 
 ### 1.3 Licensing SP
 
-| Lisensi | Yang Dibuka |
+| Lisensi | Yang Diaktifkan |
 |---|---|
 | Network-Advantage | OSPF full, BGP full, MPLS LDP, MPLS L3VPN, MPLS L2VPN, EVPN, VRF, Multicast |
 
-Cek di semua P, PE, RR, ASBR sebelum go-live. Satu perangkat tanpa network-advantage bisa bikin seluruh layanan customer di POP itu gagal.
+Periksa pada seluruh P, PE, RR, ASBR sebelum go-live. Satu device tanpa network-advantage dapat menyebabkan failure pada seluruh service customer di POP tersebut.
 
-Aturan wajib SP: `license boot level network-advantage` jangan skip. Tanpa itu BGP, MPLS, EVPN tidak jalan.
+Aturan wajib SP: `license boot level network-advantage` tidak diperkenankan dilewatkan. Tanpa itu BGP, MPLS, EVPN tidak beroperasi.
 
 ```
 license boot level network-advantage
@@ -61,7 +58,7 @@ show license summary
 
 ### 1.4 Golden Image SP
 
-Satu Golden Image per keluarga platform. Contoh semua ASR di 17.12.4, semua 9500 di 17.12.4. Jangan campur versi di satu POP. Beda versi bisa beda perilaku LDP dan BGP.
+Satu Golden Image per platform family. Contoh: seluruh ASR di 17.12.4, semua 9500 di 17.12.4. Tidak diperkenankan mencampur versi di satu POP. Perbedaan versi dapat menyebabkan perbedaan perilaku LDP dan BGP.
 
 ```
 install add file flash:cat9k_iosxe.17.12.04.SPA.bin activate commit
@@ -70,7 +67,7 @@ install remove inactive
 
 ### 1.5 Safe Change SP
 
-SP tidak boleh down karena typo. Wajib safety net.
+SP tidak diperkenankan down karena typo. Safety net wajib diterapkan.
 
 ```
 archive
@@ -96,11 +93,10 @@ Rollback:
 configure replace flash:pre-change-SP.cfg force
 ```
 
-Larangan: Jangan pernah `copy startup-config running-config` untuk rollback. Itu merge, bukan replace.
+Larangan: Tidak diperkenankan `copy startup-config running-config` untuk rollback. Itu merge, bukan replace.
 
----
 
-## Bab 2: Underlay SP, OSPF + BFD + MPLS LDP + BGP Route Reflector
+## Modul 2: Underlay SP, OSPF + BFD + MPLS LDP + BGP Route Reflector
 
 ### 2.1 Day-0 SP
 
@@ -156,7 +152,7 @@ archive
 
 ### 2.2 OSPF Underlay SP
 
-OSPF di SP hanya untuk Loopback dan link core. Tidak ada route customer di OSPF core.
+OSPF di SP hanya untuk Loopback dan link core. Tidak terdapat route customer di OSPF core.
 
 | Decision | Pilihan SP Ini | Alasan |
 |---|---|---|
@@ -228,7 +224,7 @@ show mpls forwarding-table
 show bfd neighbors
 ```
 
-P harus bisa ping semua Loopback PE dan RR. P tidak boleh tahu route customer.
+P wajib dapat ping semua Loopback PE dan RR. P tidak diperkenankan mengetahui route customer.
 
 ### 2.4 BGP Route Reflector SP
 
@@ -253,25 +249,25 @@ router bgp 64500
  neighbor 10.0.0.2 update-source Loopback0
  !
  address-family vpnv4
-  neighbor 10.0.0.11 activate
-  neighbor 10.0.0.11 send-community extended
-  neighbor 10.0.0.11 route-reflector-client
-  neighbor 10.0.0.12 activate
-  neighbor 10.0.0.12 send-community extended
-  neighbor 10.0.0.12 route-reflector-client
-  neighbor 10.0.0.2 activate
-  neighbor 10.0.0.2 send-community extended
+ neighbor 10.0.0.11 activate
+ neighbor 10.0.0.11 send-community extended
+ neighbor 10.0.0.11 route-reflector-client
+ neighbor 10.0.0.12 activate
+ neighbor 10.0.0.12 send-community extended
+ neighbor 10.0.0.12 route-reflector-client
+ neighbor 10.0.0.2 activate
+ neighbor 10.0.0.2 send-community extended
  exit-address-family
  !
  address-family l2vpn evpn
-  neighbor 10.0.0.11 activate
-  neighbor 10.0.0.11 send-community extended
-  neighbor 10.0.0.11 route-reflector-client
-  neighbor 10.0.0.12 activate
-  neighbor 10.0.0.12 send-community extended
-  neighbor 10.0.0.12 route-reflector-client
-  neighbor 10.0.0.2 activate
-  neighbor 10.0.0.2 send-community extended
+ neighbor 10.0.0.11 activate
+ neighbor 10.0.0.11 send-community extended
+ neighbor 10.0.0.11 route-reflector-client
+ neighbor 10.0.0.12 activate
+ neighbor 10.0.0.12 send-community extended
+ neighbor 10.0.0.12 route-reflector-client
+ neighbor 10.0.0.2 activate
+ neighbor 10.0.0.2 send-community extended
  exit-address-family
 ```
 
@@ -282,13 +278,11 @@ show bgp vpnv4 unicast summary
 show bgp l2vpn evpn summary
 ```
 
----
-
-## Bab 3: MPLS L3VPN, VRF, RD / RT, PE-CE
+## Modul 3: MPLS L3VPN, VRF, RD / RT, PE-CE
 
 ### 3.1 Konsep L3VPN SP
 
-Setiap customer punya VRF sendiri di PE. RD membuat route unik meski customer pakai prefix yang sama, contoh dua customer sama-sama pakai 192.168.1.0/24. RT mengontrol VRF mana boleh bicara ke VRF mana.
+Setiap customer memiliki VRF sendiri di PE. RD membuat route unik meski customer gunakan prefix yang identik, contoh dua customer identik-identik gunakan 192.168.1.0/24. RT mengontrol VRF mana diperkenankan berkomunikasi ke VRF mana.
 
 ### 3.2 VRF Definition Wajib IOS-XE
 
@@ -299,8 +293,8 @@ vrf definition BANK
  route-target import 64500:1001
  !
  address-family ipv4
-  route-target export 64500:1001
-  route-target import 64500:1001
+ route-target export 64500:1001
+ route-target import 64500:1001
  exit-address-family
 !
 vrf definition RETAIL
@@ -309,8 +303,8 @@ vrf definition RETAIL
  route-target import 64500:1002
  !
  address-family ipv4
-  route-target export 64500:1002
-  route-target import 64500:1002
+ route-target export 64500:1002
+ route-target import 64500:1002
  exit-address-family
 !
 vrf definition INTERNET
@@ -319,8 +313,8 @@ vrf definition INTERNET
  route-target import 64500:9000
  !
  address-family ipv4
-  route-target export 64500:9000
-  route-target import 64500:9000
+ route-target export 64500:9000
+ route-target import 64500:9000
  exit-address-family
 !
 vrf definition DC-EVPN
@@ -329,8 +323,8 @@ vrf definition DC-EVPN
  route-target import 64500:1003
  !
  address-family ipv4
-  route-target export 64500:1003
-  route-target import 64500:1003
+ route-target export 64500:1003
+ route-target import 64500:1003
  exit-address-family
 ```
 
@@ -338,12 +332,12 @@ Selalu isi RT di level vrf definition dan di address-family ipv4. RD unik per cu
 
 ### 3.3 Pola RT SP
 
-| Pola | Contoh | Kapan Dipakai |
+| Pola | Contoh | Kapan Digunakan |
 |---|---|---|
 | Simetris | Export = Import = 64500:1001 | Customer biasa, site to site full mesh |
-| Hub-Spoke | Hub export 64500:1001, import 64500:1002. Spoke sebaliknya | Retail, cabang hanya ke pusat, tidak antar cabang |
-| Extranet | Bank export 64500:1001, Vendor import 64500:1001 | Bank mau bicara ke vendor tertentu |
-| Internet | INTERNET RT 64500:9000 terpisah | Internet tidak boleh bocor ke L3VPN |
+| Hub-Spoke | Hub export 64500:1001, import 64500:1002. Spoke sebaliknya | Retail, branch hanya ke pusat, tidak antar branch |
+| Extranet | Bank export 64500:1001, Vendor import 64500:1001 | Bank mau berkomunikasi ke vendor tertentu |
+| Internet | INTERNET RT 64500:9000 terpisah | Internet tidak diperkenankan leak ke L3VPN |
 
 ### 3.4 BGP PE L3VPN
 
@@ -362,33 +356,33 @@ router bgp 64500
  neighbor 10.0.0.2 update-source Loopback0
  !
  address-family vpnv4
-  neighbor 10.0.0.1 activate
-  neighbor 10.0.0.1 send-community extended
-  neighbor 10.0.0.2 activate
-  neighbor 10.0.0.2 send-community extended
+ neighbor 10.0.0.1 activate
+ neighbor 10.0.0.1 send-community extended
+ neighbor 10.0.0.2 activate
+ neighbor 10.0.0.2 send-community extended
  exit-address-family
  !
  address-family ipv4 vrf BANK
-  neighbor 192.168.255.1 remote-as 65001
-  neighbor 192.168.255.1 description CE-BANK-JKT
-  neighbor 192.168.255.1 activate
-  neighbor 192.168.255.1 as-override
-  neighbor 192.168.255.1 send-community both
-  redistribute connected
+ neighbor 192.168.255.1 remote-as 65001
+ neighbor 192.168.255.1 description CE-BANK-JKT
+ neighbor 192.168.255.1 activate
+ neighbor 192.168.255.1 as-override
+ neighbor 192.168.255.1 send-community both
+ redistribute connected
  exit-address-family
  !
  address-family ipv4 vrf RETAIL
-  redistribute connected
-  redistribute static
+ redistribute connected
+ redistribute static
  exit-address-family
  !
  address-family ipv4 vrf INTERNET
-  redistribute connected
-  redistribute static
+ redistribute connected
+ redistribute static
  exit-address-family
 ```
 
-Catatan: `as-override` wajib jika customer pakai ASN yang sama di dua site, contoh Bank 65001 di JKT dan SBY. Tanpa as-override, BGP drop karena loop AS.
+Catatan: `as-override` wajib jika customer gunakan ASN yang identik di dua site, contoh Bank 65001 di JKT dan SBY. Tanpa as-override, BGP drop karena loop AS.
 
 ### 3.5 PE-CE, Tiga Opsi SP
 
@@ -403,9 +397,9 @@ interface GigabitEthernet0/0/0
 !
 router bgp 64500
  address-family ipv4 vrf BANK
-  neighbor 192.168.255.1 remote-as 65001
-  neighbor 192.168.255.1 activate
-  neighbor 192.168.255.1 as-override
+ neighbor 192.168.255.1 remote-as 65001
+ neighbor 192.168.255.1 activate
+ neighbor 192.168.255.1 as-override
  exit-address-family
 ```
 
@@ -436,7 +430,7 @@ interface GigabitEthernet0/0/2
 ip route vrf RETAIL 172.17.10.0 255.255.255.0 192.168.255.5
 ```
 
-Penting: Setelah `vrf forwarding`, IP lama hilang. Wajib ketik ulang `ip address`.
+Penting: Setelah `vrf forwarding`, IP lama hilang. Wajib diketik ulang `ip address`.
 
 ### 3.6 Verifikasi L3VPN
 
@@ -452,18 +446,15 @@ ping vrf RETAIL 172.17.20.1 source 172.17.10.1 size 9000 df-bit
 ping vrf BANK 172.17.20.1
 ```
 
-Ping terakhir harus gagal, itu bukti isolasi. Jika ping antar VRF sukses, RT bocor.
+Ping terakhir wajib gagal, itu bukti isolasi. Jika ping antar VRF sukses, RT leak.
 
+## Modul 4: MPLS L2VPN & EVPN untuk SP, VPWS, VPLS, EVPN DCI
 
----
+### 4.1 Kapan Menggunakan L2VPN, Kapan L3VPN
 
-## Bab 4: MPLS L2VPN & EVPN untuk SP, VPWS, VPLS, EVPN DCI
-
-### 4.1 Kapan Pakai L2VPN, Kapan L3VPN
-
-| Layanan | Pakai | Contoh |
+| Service | Gunakan | Contoh |
 |---|---|---|
-| L3VPN | Customer butuh routing antar site | Bank, Retail, kantor cabang |
+| L3VPN | Customer butuh routing antar site | Bank, Retail, kantor branch |
 | L2VPN VPWS | Customer butuh satu link point to point L2 | Cluster database, link leased line virtual |
 | VPLS | Customer butuh multipoint L2 | Customer dengan 3 site satu VLAN |
 | EVPN | Customer butuh L2 + L3 modern, DCI | Data Center Interconnect, Cloud |
@@ -472,7 +463,7 @@ Ping terakhir harus gagal, itu bukti isolasi. Jika ping antar VRF sukses, RT boc
 
 VPWS adalah pseudowire MPLS point to point. Customer merasa seperti kabel langsung.
 
-Di PE JKT-01, ASR 1000-X:
+Pada PE JKT-01, ASR 1000-X:
 
 ```
 pseudowire-class BANK-PW
@@ -485,7 +476,7 @@ interface GigabitEthernet0/0/3
  no shutdown
 ```
 
-Di PE SBY-01:
+Pada PE SBY-01:
 
 ```
 pseudowire-class BANK-PW
@@ -506,11 +497,11 @@ show mpls l2transport vc 1001 detail
 show mpls l2transport vc summary
 ```
 
-Jika VPWS down, cek: LDP neighbor up, MTU 9216, VC ID sama di kedua PE, peer IP adalah Loopback0 PE lawan.
+Jika VPWS down, periksa: LDP neighbor up, MTU 9216, VC ID identik di kedua PE, peer IP adalah Loopback0 PE lawan.
 
 ### 4.3 VPLS, Multipoint L2
 
-VPLS untuk customer dengan lebih dari 2 site satu broadcast domain. Di IOS-XE, VPLS memakai VFI.
+VPLS untuk customer dengan lebih dari 2 site satu broadcast domain. Pada IOS-XE, VPLS menggunakan VFI.
 
 ```
 l2vpn vfi context RETAIL-VPLS
@@ -526,13 +517,13 @@ interface GigabitEthernet0/0/4
  description TO CE-RETAIL-VPLS
  no switchport
  service instance 200 ethernet
-  encapsulation dot1q 200
-  rewrite ingress tag pop 1 symmetric
-  bridge-domain 200
+ encapsulation dot1q 200
+ rewrite ingress tag pop 1 symmetric
+ bridge-domain 200
  no shutdown
 ```
 
-Catatan SP: VPLS boros karena flood. Jika customer baru, tawarkan EVPN dulu, bukan VPLS. VPLS hanya untuk customer legacy yang belum bisa migrasi.
+Catatan SP: VPLS tidak efisien karena flood. Jika customer baru, direkomendasikan EVPN dulu, bukan VPLS. VPLS hanya untuk customer legacy yang belum dapat migrasi.
 
 ### 4.4 EVPN untuk SP, DCI dan L2 Modern
 
@@ -542,7 +533,7 @@ Arsitektur EVPN SP:
 
 ```
 [PE JKT - VTEP] --- [P Core MPLS] --- [PE SBY - VTEP]
-  VNI 10300, VRF DC-EVPN       BGP EVPN       VNI 10300, VRF DC-EVPN
+ VNI 10300, VRF DC-EVPN BGP EVPN VNI 10300, VRF DC-EVPN
 ```
 
 Mapping wajib konsisten:
@@ -566,8 +557,8 @@ vrf definition DC-EVPN
  route-target import 64500:1003
  !
  address-family ipv4
-  route-target export 64500:1003
-  route-target import 64500:1003
+ route-target export 64500:1003
+ route-target import 64500:1003
  exit-address-family
 !
 router bgp 64500
@@ -579,15 +570,15 @@ router bgp 64500
  neighbor 10.0.0.2 update-source Loopback0
  !
  address-family l2vpn evpn
-  neighbor 10.0.0.1 activate
-  neighbor 10.0.0.1 send-community extended
-  neighbor 10.0.0.2 activate
-  neighbor 10.0.0.2 send-community extended
+ neighbor 10.0.0.1 activate
+ neighbor 10.0.0.1 send-community extended
+ neighbor 10.0.0.2 activate
+ neighbor 10.0.0.2 send-community extended
  exit-address-family
  !
  address-family ipv4 vrf DC-EVPN
-  advertise l2vpn evpn
-  redistribute connected
+ advertise l2vpn evpn
+ redistribute connected
  exit-address-family
 !
 l2vpn evpn
@@ -614,7 +605,7 @@ interface Vlan300
  no shutdown
 ```
 
-`ip virtual-router address` adalah Anycast Gateway. Semua PE pakai IP gateway sama. VM pindah POP tanpa ganti gateway.
+`ip virtual-router address` adalah Anycast Gateway. Semua PE gunakan IP gateway identik. VM bermigrasi POP tanpa ganti gateway.
 
 Route Type EVPN:
 
@@ -641,16 +632,16 @@ ping vrf DC-EVPN 192.168.30.20 size 9000 df-bit
 
 ---
 
-## Bab 5: Internet Edge, ASBR, BGP Filtering, RPKI, Bogon
+## Modul 5: Internet Edge, ASBR, BGP Filtering, RPKI, Bogon
 
 ### 5.1 Arsitektur Internet Edge SP
 
-Internet tidak boleh campur dengan L3VPN di routing global. Internet di VRF INTERNET. PE ke ASBR pakai VPNv4. ASBR ke Upstream pakai eBGP global.
+Internet tidak diperkenankan tercampur dengan L3VPN di routing global. Internet di VRF INTERNET. PE ke ASBR gunakan VPNv4. ASBR ke Upstream gunakan eBGP global.
 
 ```
 [PE JKT] --- VPNv4 VRF INTERNET --- [ASBR JKT] --- eBGP --- [Upstream A / B]
-                                          |
-                                       [IX / IIX]
+ |
+ [IX / IIX]
 ```
 
 ### 5.2 Template ASBR, ASR 1000-X
@@ -664,8 +655,8 @@ vrf definition INTERNET
  route-target import 64500:9000
  !
  address-family ipv4
-  route-target export 64500:9000
-  route-target import 64500:9000
+ route-target export 64500:9000
+ route-target import 64500:9000
  exit-address-family
 !
 interface Loopback0
@@ -685,25 +676,25 @@ router bgp 64500
  neighbor 198.51.100.1 description UPSTREAM-B
  !
  address-family vpnv4
-  neighbor 10.0.0.1 activate
-  neighbor 10.0.0.1 send-community extended
+ neighbor 10.0.0.1 activate
+ neighbor 10.0.0.1 send-community extended
  exit-address-family
  !
  address-family ipv4 unicast
-  neighbor 203.0.113.1 activate
-  neighbor 203.0.113.1 send-community
-  neighbor 203.0.113.1 route-map UPSTREAM-IN in
-  neighbor 203.0.113.1 route-map UPSTREAM-OUT out
-  neighbor 198.51.100.1 activate
-  neighbor 198.51.100.1 send-community
-  neighbor 198.51.100.1 route-map UPSTREAM-IN in
-  neighbor 198.51.100.1 route-map UPSTREAM-OUT out
-  network 203.0.113.0 mask 255.255.255.0
+ neighbor 203.0.113.1 activate
+ neighbor 203.0.113.1 send-community
+ neighbor 203.0.113.1 route-map UPSTREAM-IN in
+ neighbor 203.0.113.1 route-map UPSTREAM-OUT out
+ neighbor 198.51.100.1 activate
+ neighbor 198.51.100.1 send-community
+ neighbor 198.51.100.1 route-map UPSTREAM-IN in
+ neighbor 198.51.100.1 route-map UPSTREAM-OUT out
+ network 203.0.113.0 mask 255.255.255.0
  exit-address-family
  !
  address-family ipv4 vrf INTERNET
-  redistribute connected
-  redistribute static
+ redistribute connected
+ redistribute static
  exit-address-family
 !
 interface TenGigabitEthernet0/0/0
@@ -725,7 +716,7 @@ interface TenGigabitEthernet0/0/2
  no shutdown
 ```
 
-### 5.3 Filtering Wajib, Jangan Terima Full Table Tanpa Filter
+### 5.3 Filtering Wajib, Tidak Menerima Full Table Tanpa Filter
 
 ```
 ip prefix-list BOGON deny 10.0.0.0/8 le 32
@@ -744,7 +735,7 @@ route-map UPSTREAM-IN permit 20
  set local-preference 200
 !
 route-map UPSTREAM-IN permit 30
- description Terima route lain dengan validasi RPKI di produksi
+ description Menerima route lain dengan validasi RPKI di produksi
  set local-preference 100
 !
 route-map UPSTREAM-OUT permit 10
@@ -752,11 +743,11 @@ route-map UPSTREAM-OUT permit 10
  set as-path prepend 64500 64500
 ```
 
-Di produksi, aktifkan RPKI / ROA validation. Jangan terima prefix yang invalid. Gunakan `bgp validation` dan route-map yang drop invalid. Ini mencegah hijack.
+Pada produksi, RPKI / ROA validation diaktifkan. Tidak diperkenankan menerima prefix yang invalid. Gunakan `bgp validation` dan route-map yang drop invalid. Ini mencegah hijack.
 
 ### 5.4 Anti Spoofing dan uRPF
 
-Di PE-CE dan ASBR, aktifkan uRPF untuk cegah spoofing.
+Pada PE-CE dan ASBR, uRPF diaktifkan untuk mencegah spoofing.
 
 ```
 interface GigabitEthernet0/0/0
@@ -775,7 +766,7 @@ interface TenGigabitEthernet0/0/0
 
 ### 5.5 NAT / CGNAT untuk Customer Internet
 
-Customer Internet kecil sering pakai CGNAT. PE atau ASBR yang NAT, bukan CE.
+Customer Internet kecil sering gunakan CGNAT. PE atau ASBR yang NAT, bukan CE.
 
 ```
 ip nat pool CGNAT-POOL 100.64.0.1 100.64.0.254 prefix-length 24
@@ -811,11 +802,11 @@ show ip bgp validation
 
 ---
 
-## Bab 6: QoS Service-Provider, Gold / Silver / Bronze
+## Modul 6: QoS Service-Provider, Gold / Silver / Bronze
 
 ### 6.1 Prinsip QoS SP
 
-SP tidak bisa jual QoS asal-asalan. QoS SP harus bisa diukur, dipolicer di PE, dan dijamin di core.
+SP tidak dapat jual QoS asal-asalan. QoS SP wajib dapat diukur, dipolicer di PE, dan dijamin di core.
 
 - Policer di PE ingress, per customer, per kelas. Ini yang membedakan Gold dan Bronze.
 - Core trust MPLS EXP, tidak re-mark sembarangan.
@@ -855,14 +846,14 @@ Ini template yang membedakan SP profesional dan amatir. Customer Bank Gold 10 Mb
 ```
 policy-map SP-PE-INGRESS-BANK-GOLD
  class VOICE
-  police 10000000 conform-action transmit exceed-action drop
-  set mpls experimental imposition 5
+ police 10000000 conform-action transmit exceed-action drop
+ set mpls experimental imposition 5
  class CRITICAL-DATA
-  police 50000000 conform-action transmit exceed-action drop
-  set mpls experimental imposition 3
+ police 50000000 conform-action transmit exceed-action drop
+ set mpls experimental imposition 3
  class class-default
-  police 20000000 conform-action transmit exceed-action drop
-  set mpls experimental imposition 0
+ police 20000000 conform-action transmit exceed-action drop
+ set mpls experimental imposition 0
 !
 interface GigabitEthernet0/0/0
  description TO CE-BANK-JKT - GOLD 60M
@@ -877,11 +868,11 @@ Customer Retail Silver:
 ```
 policy-map SP-PE-INGRESS-RETAIL-SILVER
  class CRITICAL-DATA
-  police 30000000 conform-action transmit exceed-action drop
-  set mpls experimental imposition 3
+ police 30000000 conform-action transmit exceed-action drop
+ set mpls experimental imposition 3
  class class-default
-  police 20000000 conform-action transmit exceed-action drop
-  set mpls experimental imposition 0
+ police 20000000 conform-action transmit exceed-action drop
+ set mpls experimental imposition 0
 !
 interface GigabitEthernet0/0/1
  description TO CE-RETAIL-JKT - SILVER 50M
@@ -896,15 +887,15 @@ interface GigabitEthernet0/0/1
 ```
 policy-map SP-CORE-EGRESS-100G
  class GOLD
-  priority percent 30
+ priority percent 30
  class SILVER
-  bandwidth percent 40
-  random-detect dscp-based
+ bandwidth percent 40
+ random-detect dscp-based
  class BRONZE
-  bandwidth percent 20
+ bandwidth percent 20
  class class-default
-  bandwidth percent 10
-  random-detect dscp-based
+ bandwidth percent 10
+ random-detect dscp-based
 !
 interface HundredGigE1/0/1
  description TO P-SBY - CORE 100G
@@ -917,21 +908,21 @@ interface HundredGigE1/0/1
 
 ### 6.6 Shaping PE-CE
 
-Shaping harus sesuai bandwidth yang dibeli, bukan bandwidth fisik. Jika customer beli 50 Mbps di link 1G, shaping 50 Mbps.
+Shaping wajib sesuai bandwidth yang dibeli, bukan bandwidth fisik. Jika customer beli 50 Mbps di link 1G, shaping 50 Mbps.
 
 ```
 policy-map SP-PE-CE-SHAPE-50M
  class class-default
-  shape average 50000000
-  service-policy SP-PE-EGRESS-50M
+ shape average 50000000
+ service-policy SP-PE-EGRESS-50M
 !
 policy-map SP-PE-EGRESS-50M
  class GOLD
-  priority percent 30
+ priority percent 30
  class SILVER
-  bandwidth percent 40
+ bandwidth percent 40
  class BRONZE
-  bandwidth percent 30
+ bandwidth percent 30
 !
 interface GigabitEthernet0/0/0
  description TO CE-BANK-JKT
@@ -950,25 +941,22 @@ show mls qos interface HundredGigE1/0/1 statistics
 show platform hardware fed switch 1 qos queue stats interface HundredGigE1/0/1
 ```
 
-Drop di GOLD harus 0. Jika drop, policer terlalu kecil atau priority percent terlalu kecil. Drop di BRONZE tinggi itu by design. Jika customer komplain voice putus, cek policer di PE ingress dulu. 90 persen kasus QoS SP adalah policer terlalu kecil, bukan core congestion.
+Drop di GOLD wajib 0. Jika drop, policer terlalu kecil atau priority percent terlalu kecil. Drop di BRONZE tinggi itu by design. Jika customer komplain voice putus, periksa policer di PE ingress dulu. 90 persen kasus QoS SP adalah policer terlalu kecil, bukan core congestion.
 
-
----
-
-## Bab 7: High Availability SP, Redundancy, ISSU, Fast Reroute
+## Modul 7: High Availability SP, Redundancy, ISSU, Fast Reroute
 
 ### 7.1 Prinsip HA SP
 
-SP tidak boleh down karena satu perangkat mati. Semua harus redundant.
+SP tidak diperkenankan down karena satu device mati. Semua wajib redundant.
 
 | Layer | Redundansi | Target |
 |---|---|---|
-| Core | Dua P per POP, dua link Inter-POP | Satu P mati, traffic pindah otomatis |
+| Core | Dua P per POP, dua link Inter-POP | Satu P mati, traffic bermigrasi otomatis |
 | PE | Dua PE per POP besar | Satu PE mati, CE failover |
-| RR | Dua RR, JKT dan SBY | Satu RR mati, BGP tetap jalan |
-| Upstream | Dua Upstream, dua ASBR | Satu Upstream mati, Internet tetap jalan |
-| Power | Dual PSU, dual feed | Satu PSU mati, perangkat tetap jalan |
-| CE | Dua CE untuk customer Gold | Satu CE mati, customer tetap jalan |
+| RR | Dua RR, JKT dan SBY | Satu RR mati, BGP tetap beroperasi |
+| Upstream | Dua Upstream, dua ASBR | Satu Upstream mati, Internet tetap beroperasi |
+| Power | Dual PSU, dual feed | Satu PSU mati, device tetap beroperasi |
+| CE | Dua CE untuk customer Gold | Satu CE mati, customer tetap beroperasi |
 
 ### 7.2 StackWise Virtual untuk P dan PE Agregasi
 
@@ -989,11 +977,11 @@ interface TwentyFiveGigE1/0/48
  no shutdown
 ```
 
-Verifikasi: `show stackwise-virtual`, `show stackwise-virtual dual-active-detection`, `show switch`, `show redundancy`. Dual Active Detection wajib. Tanpa DAD, split brain bisa bikin loop.
+Verifikasi: `show stackwise-virtual`, `show stackwise-virtual dual-active-detection`, `show switch`, `show redundancy`. Dual Active Detection wajib. Tanpa DAD, split brain dapat menghasilkan loop.
 
 ### 7.3 ISSU
 
-ISSU hanya jalan jika dua supervisor atau StackWise Virtual aktif, versi lama dan baru support ISSU path, lisensi sama.
+ISSU hanya beroperasi jika dua supervisor atau StackWise Virtual aktif, versi lama dan baru support ISSU path, lisensi identik.
 
 ```
 install add file flash:cat9k_iosxe.17.15.01.SPA.bin activate commit
@@ -1001,11 +989,11 @@ show install summary
 show redundancy
 ```
 
-Jika ISSU gagal, cek `show install log`, rollback dengan `install abort`.
+Jika ISSU gagal, periksa `show install log`, rollback dengan `install abort`.
 
 ### 7.4 MPLS Fast Reroute dan LFA
 
-Di SP, konvergensi OSPF 3 detik masih terlalu lama untuk Gold. Aktifkan LFA dan MPLS FRR.
+Pada SP, konvergensi OSPF 3 detik masih terlalu lama untuk Gold. LFA dan MPLS FRR diaktifkan.
 
 ```
 router ospf 100
@@ -1022,7 +1010,7 @@ interface HundredGigE1/0/1
 mpls traffic-eng reoptimize timers frequency 0
 ```
 
-Untuk FRR yang lebih advance, gunakan RSVP-TE. Di IOS-XE, RSVP-TE tersedia di ASR 1000-X dan 9500 / 9600 dengan network-advantage.
+Untuk FRR yang lebih advance, gunakan RSVP-TE. Pada IOS-XE, RSVP-TE tersedia di ASR 1000-X dan 9500 / 9600 dengan network-advantage.
 
 Verifikasi FRR:
 
@@ -1046,9 +1034,8 @@ interface GigabitEthernet0/0/1
  no shutdown
 ```
 
----
 
-## Bab 8: Operasi SP, SLA, Monitoring, Telemetry, Automation, NOC Playbook
+## Modul 8: Operasi SP, SLA, Monitoring, Telemetry, Automation, NOC Playbook
 
 ### 8.1 SLA SP
 
@@ -1075,7 +1062,7 @@ track 100 ip sla 100 reachability
 
 ### 8.3 Telemetry SP
 
-SNMP masih dipakai, tapi untuk Core modern pakai Model-Driven Telemetry.
+SNMP masih dipakai, namun untuk Core modern gunakan Model-Driven Telemetry.
 
 ```
 telemetry ietf subscription 101
@@ -1118,29 +1105,29 @@ interface GigabitEthernet0/0/0
 
 ### 8.4 Automation SP
 
-Jangan SSH dan paste config manual untuk 100 PE. Pakai template per role.
+Tidak diperkenankan SSH dan paste config manual untuk 100 PE. Gunakan template per role.
 
 Struktur:
 
 ```
 inventory/
-  group_vars/
-    pe.yml
-    p.yml
-    rr.yml
+ group_vars/
+ pe.yml
+ p.yml
+ rr.yml
 templates/
-  pe-asr.j2
-  p-9500.j2
+ pe-asr.j2
+ p-9500.j2
 playbooks/
-  deploy-pe.yml
-  add-customer.yml
+ deploy-pe.yml
+ add-customer.yml
 ```
 
 Tambah customer baru: buat VRF di 2 PE saja, tidak perlu ubah P atau RR. Jika tambah customer butuh ubah P, desain salah.
 
 ### 8.5 NOC Playbook, Troubleshooting 5 Langkah
 
-Pakai urutan ini setiap insiden:
+Gunakan urutan ini setiap insiden:
 
 1. Fisik dan Link: `show interfaces status`, `show interfaces counters errors`, `show log`
 2. Underlay: `show ip ospf neighbor`, `show ip route`, `show bfd neighbors`
@@ -1150,13 +1137,13 @@ Pakai urutan ini setiap insiden:
 
 Dokumentasikan setiap insiden: gejala, perintah yang dipakai, root cause, fix, pencegahan.
 
-### 8.6 Keamanan SP
+### 8.6 Security SP
 
-- uRPF di PE-CE dan ASBR, sudah di Bab 5.
+- uRPF di PE-CE dan ASBR, sudah di Modul 5.
 - BGP TTL Security di PE-CE dan RR: `neighbor 192.168.255.1 ttl-security hops 1`
 - MD5 di OSPF dan BGP: `neighbor 10.0.0.1 password BGP-KEY`
-- Control Plane Policing: Batasi traffic ke CPU. Jangan sampai DDoS ke PE bikin CPU 100 persen.
-- Bogon dan RPKI di ASBR, sudah di Bab 5.
+- Control Plane Policing: Batasi traffic ke CPU. Tidak diperkenankan sampai DDoS ke PE menghasilkan CPU 100 persen.
+- Bogon dan RPKI di ASBR, sudah di Modul 5.
 
 ```
 control-plane
@@ -1164,58 +1151,56 @@ control-plane
 !
 policy-map COPP-SP
  class BGP
-  police 10000000 conform-action transmit exceed-action drop
+ police 10000000 conform-action transmit exceed-action drop
  class OSPF
-  police 5000000 conform-action transmit exceed-action drop
+ police 5000000 conform-action transmit exceed-action drop
  class class-default
-  police 1000000 conform-action transmit exceed-action drop
+ police 1000000 conform-action transmit exceed-action drop
 ```
 
----
-
-## Bab 9: STUDI KASUS ISP, Implementasi Full P / PE / RR / ASBR / CE
+## Modul 9: STUDI KASUS ISP, Implementasi Full P / PE / RR / ASBR / CE
 
 ### 9.1 Gambaran Bisnis dan Tantangan
 
-ISP adalah ISP regional di Jawa. Sebelum MPLS, mereka pakai OSPF + VRF-Lite + GRE per customer. Masalahnya:
+ISP adalah ISP regional di Jawa. Sebelum MPLS, mereka gunakan OSPF + VRF-Lite + GRE per customer. Masalahnya:
 
 - Tambah customer baru butuh config di semua router. 2 minggu per customer.
-- Satu customer bocor route ke customer lain karena RT manual salah.
-- Internet dan L3VPN campur di satu routing table. Satu flapping bikin semua goyang.
-- QoS tidak konsisten. Voice customer bank sering kalah dengan traffic video.
-- Tidak bisa jual L2VPN untuk customer yang butuh VLAN stretch antar cabang.
+- Satu customer leak route ke customer lain karena RT manual salah.
+- Internet dan L3VPN tercampur di satu routing table. Satu flapping menghasilkan semua goyang.
+- QoS tidak konsisten. Voice customer bank sering terdegradasi dengan traffic video.
+- Tidak dapat jual L2VPN untuk customer yang butuh VLAN stretch antar branch.
 
 Target setelah MPLS:
 
 - Tambah customer baru dalam 1 hari, config hanya di 2 PE.
-- Isolasi VRF 100 persen, tidak ada bocor.
-- Jual 4 layanan: MPLS L3VPN, MPLS L2VPN VPWS, Internet Dedicated, EVPN Data Center Interconnect.
+- Isolasi VRF 100 persen, tidak terdapat leak.
+- Jual 4 service: MPLS L3VPN, MPLS L2VPN VPWS, Internet Dedicated, EVPN Data Center Interconnect.
 - SLA: Latency Jakarta-Surabaya di bawah 15 ms, Packet Loss di bawah 0.1 persen, Availability 99.95 persen.
-- QoS SP yang bisa dijual per kelas: Gold, Silver, Bronze.
+- QoS SP yang dapat dijual per kelas: Gold, Silver, Bronze.
 
 ### 9.2 Topologi SP
 
 ```
-        [Upstream A]   [Upstream B]   [IX / IIX]
-                \               /               /
-                 [ASBR JKT - ASR 1000-X]
-                          |
-        [RR JKT - 9600] [P JKT - 9500] [PE JKT-01 - ASR 1000-X] --- [CE Bank JKT - 8200]
-                          |   |   |      [PE JKT-02 - 9500] --- [CE Retail JKT - ISR 4000]
-                          |   |   |
-                    100G HundredGigE Inter-POP
-                          |   |   |
-        [P SBY - 9500] [PE SBY-01 - ASR 1000-X] --- [CE Bank SBY - 8200]
-        [RR SBY - 9600] [PE SBY-02 - 9500] --- [CE DC SBY - 9300 EVPN]
-                          |   |
-        [P BDG - 9500] [PE BDG-01 - ASR 1000-X] --- [CE Retail BDG - ISR 4000]
+ [Upstream A] [Upstream B] [IX / IIX]
+ \ / /
+ [ASBR JKT - ASR 1000-X]
+ |
+ [RR JKT - 9600] [P JKT - 9500] [PE JKT-01 - ASR 1000-X] --- [CE Bank JKT - 8200]
+ | | | [PE JKT-02 - 9500] --- [CE Retail JKT - ISR 4000]
+ | | |
+ 100G HundredGigE Inter-POP
+ | | |
+ [P SBY - 9500] [PE SBY-01 - ASR 1000-X] --- [CE Bank SBY - 8200]
+ [RR SBY - 9600] [PE SBY-02 - 9500] --- [CE DC SBY - 9300 EVPN]
+ | |
+ [P BDG - 9500] [PE BDG-01 - ASR 1000-X] --- [CE Retail BDG - ISR 4000]
 ```
 
-Peran perangkat:
+Peran device:
 
-| Perangkat | Platform | Role SP | ASN |
+| Device | Platform | Role SP | ASN |
 |---|---|---|---|
-| P JKT / SBY / BDG | Catalyst 9500 / 9600 | P, MPLS core, LDP only, tidak tahu VRF | 64500 |
+| P JKT / SBY / BDG | Catalyst 9500 / 9600 | P, MPLS core, LDP only, tidak mengetahui VRF | 64500 |
 | PE JKT-01 / SBY-01 / BDG-01 | ASR 1000-X | PE, L3VPN, L2VPN, Internet, BGP | 64500 |
 | PE JKT-02 / SBY-02 | Catalyst 9500 | PE Lite, L3VPN, EVPN Leaf | 64500 |
 | RR JKT / RR SBY | Catalyst 9600 | Route Reflector VPNv4 + EVPN | 64500 |
@@ -1224,7 +1209,7 @@ Peran perangkat:
 | CE Retail | ISR 4000 / 8200 | CE, BGP / Static | 65002 |
 | CE DC | Catalyst 9300 | CE EVPN, VXLAN | 65003 |
 
-Prinsip SP: P tidak tahu VRF. PE yang tahu VRF. RR yang tahu semua route VPNv4. Customer tidak lihat core.
+Prinsip SP: P tidak mengetahui VRF. PE yang mengetahui VRF. RR yang mengetahui semua route VPNv4. Customer tidak melihat core.
 
 ### 9.3 IP Addressing Plan SP
 
@@ -1254,7 +1239,7 @@ ASN Plan:
 
 #### 9.4.1 P Router, Catalyst 9500, P JKT
 
-P paling simpel. Tidak ada VRF customer, tidak ada BGP customer. Hanya OSPF + MPLS + QoS core.
+P paling simpel. Tidak terdapat VRF customer, tidak terdapat BGP customer. Hanya OSPF + MPLS + QoS core.
 
 ```
 hostname P-JKT-01
@@ -1318,7 +1303,7 @@ archive
  write-memory
 ```
 
-Verifikasi P: `show ip ospf neighbor`, `show mpls ldp neighbor`, `show mpls forwarding-table`, `show ip route 10.0.0.11`. P harus bisa ping semua Loopback PE dan RR, tapi tidak boleh tahu route customer. Cek `show ip route vrf` di P harus kosong.
+Verifikasi P: `show ip ospf neighbor`, `show mpls ldp neighbor`, `show mpls forwarding-table`, `show ip route 10.0.0.11`. P wajib dapat ping semua Loopback PE dan RR, namun tidak diperkenankan mengetahui route customer. Periksa `show ip route vrf` di P wajib kosong.
 
 #### 9.4.2 PE Utama, ASR 1000-X, PE JKT-01
 
@@ -1348,8 +1333,8 @@ vrf definition BANK
  route-target import 64500:1001
  !
  address-family ipv4
-  route-target export 64500:1001
-  route-target import 64500:1001
+ route-target export 64500:1001
+ route-target import 64500:1001
  exit-address-family
 !
 vrf definition RETAIL
@@ -1358,8 +1343,8 @@ vrf definition RETAIL
  route-target import 64500:1002
  !
  address-family ipv4
-  route-target export 64500:1002
-  route-target import 64500:1002
+ route-target export 64500:1002
+ route-target import 64500:1002
  exit-address-family
 !
 vrf definition INTERNET
@@ -1368,8 +1353,8 @@ vrf definition INTERNET
  route-target import 64500:9000
  !
  address-family ipv4
-  route-target export 64500:9000
-  route-target import 64500:9000
+ route-target export 64500:9000
+ route-target import 64500:9000
  exit-address-family
 !
 vrf definition DC-EVPN
@@ -1378,8 +1363,8 @@ vrf definition DC-EVPN
  route-target import 64500:1003
  !
  address-family ipv4
-  route-target export 64500:1003
-  route-target import 64500:1003
+ route-target export 64500:1003
+ route-target import 64500:1003
  exit-address-family
 !
 router ospf 100
@@ -1401,41 +1386,41 @@ router bgp 64500
  neighbor 10.0.0.2 update-source Loopback0
  !
  address-family vpnv4
-  neighbor 10.0.0.1 activate
-  neighbor 10.0.0.1 send-community extended
-  neighbor 10.0.0.2 activate
-  neighbor 10.0.0.2 send-community extended
+ neighbor 10.0.0.1 activate
+ neighbor 10.0.0.1 send-community extended
+ neighbor 10.0.0.2 activate
+ neighbor 10.0.0.2 send-community extended
  exit-address-family
  !
  address-family l2vpn evpn
-  neighbor 10.0.0.1 activate
-  neighbor 10.0.0.1 send-community extended
-  neighbor 10.0.0.2 activate
-  neighbor 10.0.0.2 send-community extended
+ neighbor 10.0.0.1 activate
+ neighbor 10.0.0.1 send-community extended
+ neighbor 10.0.0.2 activate
+ neighbor 10.0.0.2 send-community extended
  exit-address-family
  !
  address-family ipv4 vrf BANK
-  neighbor 192.168.255.1 remote-as 65001
-  neighbor 192.168.255.1 description CE-BANK-JKT
-  neighbor 192.168.255.1 activate
-  neighbor 192.168.255.1 as-override
-  neighbor 192.168.255.1 send-community both
-  redistribute connected
+ neighbor 192.168.255.1 remote-as 65001
+ neighbor 192.168.255.1 description CE-BANK-JKT
+ neighbor 192.168.255.1 activate
+ neighbor 192.168.255.1 as-override
+ neighbor 192.168.255.1 send-community both
+ redistribute connected
  exit-address-family
  !
  address-family ipv4 vrf RETAIL
-  redistribute connected
-  redistribute static
+ redistribute connected
+ redistribute static
  exit-address-family
  !
  address-family ipv4 vrf INTERNET
-  redistribute connected
-  redistribute static
+ redistribute connected
+ redistribute static
  exit-address-family
  !
  address-family ipv4 vrf DC-EVPN
-  advertise l2vpn evpn
-  redistribute connected
+ advertise l2vpn evpn
+ redistribute connected
  exit-address-family
 !
 l2vpn evpn
@@ -1485,7 +1470,7 @@ archive
  write-memory
 ```
 
-Catatan SP: `as-override` karena Bank pakai ASN sama di JKT dan SBY. `redistribute connected` di VRF INTERNET agar PE advertise subnet PE-CE ke ASBR. Static di RETAIL karena Retail tidak punya ASN.
+Catatan SP: `as-override` karena Bank gunakan ASN identik di JKT dan SBY. `redistribute connected` di VRF INTERNET agar PE advertise subnet PE-CE ke ASBR. Static di RETAIL karena Retail tidak memiliki ASN.
 
 #### 9.4.3 PE Surabaya, ASR 1000-X, PE SBY-01
 
@@ -1498,8 +1483,8 @@ vrf definition BANK
  route-target import 64500:1001
  !
  address-family ipv4
-  route-target export 64500:1001
-  route-target import 64500:1001
+ route-target export 64500:1001
+ route-target import 64500:1001
  exit-address-family
 !
 vrf definition RETAIL
@@ -1508,8 +1493,8 @@ vrf definition RETAIL
  route-target import 64500:1002
  !
  address-family ipv4
-  route-target export 64500:1002
-  route-target import 64500:1002
+ route-target export 64500:1002
+ route-target import 64500:1002
  exit-address-family
 !
 router bgp 64500
@@ -1521,23 +1506,23 @@ router bgp 64500
  neighbor 10.0.0.2 update-source Loopback0
  !
  address-family vpnv4
-  neighbor 10.0.0.1 activate
-  neighbor 10.0.0.1 send-community extended
-  neighbor 10.0.0.2 activate
-  neighbor 10.0.0.2 send-community extended
+ neighbor 10.0.0.1 activate
+ neighbor 10.0.0.1 send-community extended
+ neighbor 10.0.0.2 activate
+ neighbor 10.0.0.2 send-community extended
  exit-address-family
  !
  address-family ipv4 vrf BANK
-  neighbor 192.168.255.9 remote-as 65001
-  neighbor 192.168.255.9 description CE-BANK-SBY
-  neighbor 192.168.255.9 activate
-  neighbor 192.168.255.9 as-override
-  redistribute connected
+ neighbor 192.168.255.9 remote-as 65001
+ neighbor 192.168.255.9 description CE-BANK-SBY
+ neighbor 192.168.255.9 activate
+ neighbor 192.168.255.9 as-override
+ redistribute connected
  exit-address-family
  !
  address-family ipv4 vrf RETAIL
-  redistribute connected
-  redistribute static
+ redistribute connected
+ redistribute static
  exit-address-family
 !
 interface GigabitEthernet0/0/0
@@ -1551,7 +1536,7 @@ ip route vrf RETAIL 172.17.20.0 255.255.255.0 192.168.255.13
 
 #### 9.4.4 CE Bank, Catalyst 8200, CE BANK JKT
 
-CE tidak tahu MPLS. CE hanya tahu BGP ke PE.
+CE tidak mengetahui MPLS. CE hanya mengetahui BGP ke PE.
 
 ```
 hostname CE-BANK-JKT
@@ -1577,14 +1562,14 @@ router bgp 65001
  neighbor 192.168.255.2 description PE-JKT-01
  !
  address-family ipv4 unicast
-  neighbor 192.168.255.2 activate
-  network 172.16.10.0 mask 255.255.255.0
+ neighbor 192.168.255.2 activate
+ network 172.16.10.0 mask 255.255.255.0
  exit-address-family
 ```
 
-CE Bank SBY sama, tapi network 172.16.20.0/24 dan neighbor 192.168.255.10.
+CE Bank SBY identik, namun network 172.16.20.0/24 dan neighbor 192.168.255.10.
 
-Verifikasi CE: `show ip bgp summary`, `show ip route bgp`, `ping 172.16.20.1 source 172.16.10.1`, `traceroute 172.16.20.1`. Traceroute harus menunjukkan hop PE, P, PE, tapi CE tidak boleh bisa ping Loopback core. Itu by design.
+Verifikasi CE: `show ip bgp summary`, `show ip route bgp`, `ping 172.16.20.1 source 172.16.10.1`, `traceroute 172.16.20.1`. Traceroute wajib menunjukkan hop PE, P, PE, namun CE tidak diperkenankan dapat ping Loopback core. Itu by design.
 
 #### 9.4.5 CE Retail, ISR 4000, Static Simpel
 
@@ -1604,7 +1589,7 @@ interface GigabitEthernet0/0/1
 ip route 0.0.0.0 0.0.0.0 192.168.255.6
 ```
 
-Di PE, static sudah ada. Dua arah harus ada.
+Pada PE, static sudah tersedia. Dua arah wajib tersedia.
 
 #### 9.4.6 ASBR Internet, ASR 1000-X
 
@@ -1617,8 +1602,8 @@ vrf definition INTERNET
  route-target import 64500:9000
  !
  address-family ipv4
-  route-target export 64500:9000
-  route-target import 64500:9000
+ route-target export 64500:9000
+ route-target import 64500:9000
  exit-address-family
 !
 router bgp 64500
@@ -1632,30 +1617,30 @@ router bgp 64500
  neighbor 198.51.100.1 description UPSTREAM-B
  !
  address-family vpnv4
-  neighbor 10.0.0.1 activate
-  neighbor 10.0.0.1 send-community extended
+ neighbor 10.0.0.1 activate
+ neighbor 10.0.0.1 send-community extended
  exit-address-family
  !
  address-family ipv4 unicast
-  neighbor 203.0.113.1 activate
-  neighbor 203.0.113.1 send-community
-  neighbor 203.0.113.1 route-map UPSTREAM-IN in
-  neighbor 203.0.113.1 route-map UPSTREAM-OUT out
-  neighbor 198.51.100.1 activate
-  neighbor 198.51.100.1 send-community
-  neighbor 198.51.100.1 route-map UPSTREAM-IN in
-  neighbor 198.51.100.1 route-map UPSTREAM-OUT out
+ neighbor 203.0.113.1 activate
+ neighbor 203.0.113.1 send-community
+ neighbor 203.0.113.1 route-map UPSTREAM-IN in
+ neighbor 203.0.113.1 route-map UPSTREAM-OUT out
+ neighbor 198.51.100.1 activate
+ neighbor 198.51.100.1 send-community
+ neighbor 198.51.100.1 route-map UPSTREAM-IN in
+ neighbor 198.51.100.1 route-map UPSTREAM-OUT out
  exit-address-family
  !
  address-family ipv4 vrf INTERNET
-  redistribute connected
-  redistribute static
+ redistribute connected
+ redistribute static
  exit-address-family
 ```
 
 #### 9.4.7 VPWS untuk Bank, L2 Stretch
 
-Bank butuh satu VLAN sama di JKT dan SBY untuk cluster database lama. Pakai VPWS.
+Bank butuh satu VLAN identik di JKT dan SBY untuk cluster database lama. Gunakan VPWS.
 
 PE JKT-01:
 
@@ -1711,7 +1696,7 @@ ping vrf BANK 172.16.20.1 source 172.16.10.1
 ping vrf RETAIL 172.17.20.1 source 172.17.10.1 size 9000 df-bit
 traceroute vrf BANK 172.16.20.1
 
-! 5. Isolasi, harus gagal
+! 5. Isolasi, wajib failure
 ping vrf BANK 172.17.20.1
 ping vrf RETAIL 172.16.20.1
 
@@ -1727,17 +1712,17 @@ show xconnect all
 show mpls l2transport vc detail
 ```
 
-### 9.6 Troubleshooting SP
+### 9.6 Troubleshooting
 
-| Gejala | Penyebab | Cek |
+| Gejala | Penyebab | Periksa |
 |---|---|---|
-| CE tidak bisa ping CE lain, BGP VPNv4 Established | RT mismatch, RD duplicate | show ip vrf detail, show bgp vpnv4 unicast rd |
+| CE tidak dapat ping CE lain, BGP VPNv4 Established | RT mismatch, RD duplicate | show ip vrf detail, show bgp vpnv4 unicast rd |
 | BGP VPNv4 tidak Established | Loopback tidak reach, RR salah | show ip route, show bgp vpnv4 unicast summary |
 | LDP neighbor down | MTU mismatch, OSPF down, mpls ip belum ada | show mpls ldp neighbor, show ip ospf neighbor |
-| Ping kecil jalan, ping besar gagal | MTU bukan 9216 di satu link | ping size 9000 df-bit, show interfaces mtu |
-| Bank jalan, Retail tidak | Static di PE Retail belum ada | show ip route vrf RETAIL |
-| Internet jalan, L3VPN down | VRF INTERNET bocor ke global | show ip route vrf INTERNET |
-| VPWS down | VC ID beda, LDP down, xconnect peer salah | show xconnect all |
+| Ping kecil beroperasi, ping besar gagal | MTU bukan 9216 di satu link | ping size 9000 df-bit, show interfaces mtu |
+| Bank beroperasi, Retail tidak | Static di PE Retail belum ada | show ip route vrf RETAIL |
+| Internet beroperasi, L3VPN down | VRF INTERNET leak ke global | show ip route vrf INTERNET |
+| VPWS down | VC ID berbeda, LDP down, xconnect peer salah | show xconnect all |
 | QoS Gold drop | Policer di PE terlalu kecil | show policy-map interface |
 
 ### 9.7 Operasi, SLA, Migrasi
@@ -1746,19 +1731,17 @@ SLA: Availability 99.95 persen, Latency JKT-SBY di bawah 15 ms, Loss di bawah 0.
 
 Migrasi dari VRF-Lite / GRE ke MPLS:
 
-Fase 1: Bangun MPLS core parallel, OSPF + LDP jalan, customer masih di GRE lama.
+Fase 1: Bangun MPLS core parallel, OSPF + LDP beroperasi, customer masih di GRE lama.
 Fase 2: Migrasi satu customer pilot, Bank, ke MPLS. Uji 1 minggu.
-Fase 3: Migrasi per customer, satu per malam. Cek ping, traceroute, QoS, billing.
-Fase 4: Matikan GRE lama setelah semua customer pindah dan stabil 2 minggu.
-Fase 5: Dokumentasi dan serah terima ke NOC.
+Fase 3: Migrasi per customer, satu per malam. Periksa ping, traceroute, QoS, billing.
+Fase 4: Nonaktifkan GRE lama setelah semua customer bermigrasi dan stabil 2 minggu.
+Fase 5: Dokumentasi dan serah menerima ke NOC.
 
-Hasil ISP: Tambah customer baru dari 2 minggu jadi 1 hari. Voice Bank tidak lagi kalah dengan video. NOC bisa troubleshooting dengan framework Bab 8 dalam 10 menit.
+Hasil ISP: Tambah customer baru dari 2 minggu jadi 1 hari. Voice Bank tidak lagi terdegradasi dengan video. NOC dapat troubleshooting dengan framework Modul 8 dalam 10 menit.
 
 ### 9.8 Kesimpulan Studi Kasus
 
-ISP berhasil karena: P tidak tahu VRF, PE yang tahu VRF, RR yang reflect. VRF per customer, RD dan RT unik, isolasi 100 persen. Internet di VRF sendiri. QoS SP dijual per kelas, policer di PE. VPWS untuk L2 stretch, EVPN untuk DCI, L3VPN untuk routing. Semua change pakai archive + configure replace.
-
----
+ISP berhasil karena: P tidak mengetahui VRF, PE yang mengetahui VRF, RR yang reflect. VRF per customer, RD dan RT unik, isolasi 100 persen. Internet di VRF sendiri. QoS SP dijual per kelas, policer di PE. VPWS untuk L2 stretch, EVPN untuk DCI, L3VPN untuk routing. Semua change gunakan archive + configure replace.
 
 ## Appendix: Perintah Verifikasi Cepat & Safe Change Template SP
 
@@ -1796,8 +1779,3 @@ write memory
 ! Jika gagal:
 configure replace flash:pre-change-SP.cfg force
 ```
-
----
-
-**Dokumen ini adalah versi Service-Provider murni.** Fokus ke P / PE / RR / ASBR / CE, MPLS L3VPN, L2VPN VPWS / VPLS, EVPN, Internet Edge, QoS SP, HA, Operasi SP, dan Studi Kasus ISP. Gunakan sebagai Golden Guide untuk design, implementasi, dan operasi jaringan Service-Provider.
-
