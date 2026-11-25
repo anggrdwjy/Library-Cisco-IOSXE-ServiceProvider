@@ -9,7 +9,7 @@
 - [Modul 5: Internet Edge, ASBR, BGP Filtering, RPKI, Bogon, Anti Spoofing](https://github.com/anggrdwjy/Library-Cisco-IOSXE-ServiceProvider#modul-5-internet-edge-asbr-bgp-filtering-rpki-bogon)
 - [Modul 6: QoS Service-Provider, Gold / Silver / Bronze, MPLS EXP](https://github.com/anggrdwjy/Library-Cisco-IOSXE-ServiceProvider#modul-6-qos-service-provider-gold--silver--bronze)
 - [Modul 7: High Availability SP, Redundancy, ISSU, Fast Reroute](https://github.com/anggrdwjy/Library-Cisco-IOSXE-ServiceProvider#modul-7-high-availability-sp-redundancy-issu-fast-reroute)
-- [Modul 8: Operasi SP, SLA, Monitoring, Telemetry, Automation, NOC Playbook](https://github.com/anggrdwjy/Library-Cisco-IOSXE-ServiceProvider#modul-8-operasi-sp-sla-monitoring-telemetry-automation-noc-playbook)
+- [Modul 8: Operasi SP, SLA, Monitoring, Telemetry](https://github.com/anggrdwjy/Library-Cisco-IOSXE-ServiceProvider#modul-8-operasi-sp-sla-monitoring-telemetry)
 - [Modul 9: STUDI KASUS ISP, Implementasi Full P / PE / RR / ASBR / CE](https://github.com/anggrdwjy/Library-Cisco-IOSXE-ServiceProvider#modul-9-studi-kasus-isp-implementasi-full-p--pe--rr--asbr--ce)
 
 
@@ -1031,7 +1031,7 @@ interface GigabitEthernet0/0/1
 ```
 
 
-## Modul 8: Operasi SP, SLA, Monitoring, Telemetry, Automation, NOC Playbook
+## Modul 8: Operasi SP, SLA, Monitoring, Telemetry
 
 ### 8.1 SLA SP
 
