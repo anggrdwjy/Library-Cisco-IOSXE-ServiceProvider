@@ -2,18 +2,18 @@
 
 ## Daftar Isi
 
-- [Modul 1: Arsitektur Service-Provider, Platform & Licensing]( #modul-1-arsitektur-service-provider-platform--licensing)
-- [Modul 2: Underlay SP, OSPF + BFD + MPLS LDP + BGP Route Reflector]( #modul-2-underlay-sp-ospf--bfd--mpls-ldp--bgp-route-reflector)
-- [Modul 3: MPLS L3VPN, VRF, RD / RT, PE-CE BGP / OSPF / Static]( #modul-3-mpls-l3vpn-vrf-rd--rt-pe-ce)
-- [Modul 4: MPLS L2VPN & EVPN untuk SP, VPWS, VPLS, EVPN DCI]( #modul-4-mpls-l2vpn--evpn-untuk-sp-vpws-vpls-evpn-dci)
-- [Modul 5: Internet Edge, ASBR, BGP Filtering, RPKI, Bogon, Anti Spoofing]( #modul-5-internet-edge-asbr-bgp-filtering-rpki-bogon)
-- [Modul 6: QoS Service-Provider, Gold / Silver / Bronze, MPLS EXP]( #modul-6-qos-service-provider-gold--silver--bronze)
-- [Modul 7: High Availability SP, Redundancy, ISSU, Fast Reroute]( #modul-7-high-availability-sp-redundancy-issu-fast-reroute)
-- [Modul 8: Operasi SP, SLA, Monitoring, Telemetry]( #modul-8-operasi-sp-sla-monitoring-telemetry)
-- [Modul 9: Studi Kasus ISP, Implementasi Full P / PE / RR / ASBR / CE]( #modul-9-studi-kasus-isp-implementasi-full-p--pe--rr--asbr--ce)
+- [Modul 1. Arsitektur Service-Provider, Platform & Licensing]( #modul-1-arsitektur-service-provider-platform--licensing)
+- [Modul 2. Underlay SP, OSPF + BFD + MPLS LDP + BGP Route Reflector]( #modul-2-underlay-sp-ospf--bfd--mpls-ldp--bgp-route-reflector)
+- [Modul 3. MPLS L3VPN, VRF, RD / RT, PE-CE BGP / OSPF / Static]( #modul-3-mpls-l3vpn-vrf-rd--rt-pe-ce)
+- [Modul 4. MPLS L2VPN & EVPN untuk SP, VPWS, VPLS, EVPN DCI]( #modul-4-mpls-l2vpn--evpn-untuk-sp-vpws-vpls-evpn-dci)
+- [Modul 5. Internet Edge, ASBR, BGP Filtering, RPKI, Bogon, Anti Spoofing]( #modul-5-internet-edge-asbr-bgp-filtering-rpki-bogon)
+- [Modul 6. QoS Service-Provider, Gold / Silver / Bronze, MPLS EXP]( #modul-6-qos-service-provider-gold--silver--bronze)
+- [Modul 7. High Availability SP, Redundancy, ISSU, Fast Reroute]( #modul-7-high-availability-sp-redundancy-issu-fast-reroute)
+- [Modul 8. Operasi SP, SLA, Monitoring, Telemetry]( #modul-8-operasi-sp-sla-monitoring-telemetry)
+- [Modul 9. Studi Kasus ISP, Implementasi Full P / PE / RR / ASBR / CE]( #modul-9-studi-kasus-isp-implementasi-full-p--pe--rr--asbr--ce)
 
 
-## Modul 1: Arsitektur Service-Provider, Platform & Licensing
+## Modul 1. Arsitektur Service-Provider, Platform & Licensing
 
 ### 1.1 Prinsip SP yang Berbeda dari Enterprise
 
@@ -96,7 +96,7 @@ configure replace flash:pre-change-SP.cfg force
 Larangan: Tidak diperkenankan `copy startup-config running-config` untuk rollback. Itu merge, bukan replace.
 
 
-## Modul 2: Underlay SP, OSPF + BFD + MPLS LDP + BGP Route Reflector
+## Modul 2. Underlay SP, OSPF + BFD + MPLS LDP + BGP Route Reflector
 
 ### 2.1 Day-0 SP
 
@@ -278,7 +278,7 @@ show bgp vpnv4 unicast summary
 show bgp l2vpn evpn summary
 ```
 
-## Modul 3: MPLS L3VPN, VRF, RD / RT, PE-CE
+## Modul 3. MPLS L3VPN, VRF, RD / RT, PE-CE
 
 ### 3.1 Konsep L3VPN SP
 
@@ -448,7 +448,7 @@ ping vrf BANK 172.17.20.1
 
 Ping terakhir wajib gagal, itu bukti isolasi. Jika ping antar VRF sukses, RT leak.
 
-## Modul 4: MPLS L2VPN & EVPN untuk SP, VPWS, VPLS, EVPN DCI
+## Modul 4. MPLS L2VPN & EVPN untuk SP, VPWS, VPLS, EVPN DCI
 
 ### 4.1 Kapan Menggunakan L2VPN, Kapan L3VPN
 
@@ -630,7 +630,7 @@ ping vrf DC-EVPN 192.168.30.10 source 192.168.30.1
 ping vrf DC-EVPN 192.168.30.20 size 9000 df-bit
 ```
 
-## Modul 5: Internet Edge, ASBR, BGP Filtering, RPKI, Bogon
+## Modul 5. Internet Edge, ASBR, BGP Filtering, RPKI, Bogon
 
 ### 5.1 Arsitektur Internet Edge SP
 
@@ -798,7 +798,7 @@ show ip nat translations
 show ip bgp validation
 ```
 
-## Modul 6: QoS Service-Provider, Gold / Silver / Bronze
+## Modul 6. QoS Service-Provider, Gold / Silver / Bronze
 
 ### 6.1 Prinsip QoS SP
 
@@ -939,7 +939,7 @@ show platform hardware fed switch 1 qos queue stats interface HundredGigE1/0/1
 
 Drop di GOLD wajib 0. Jika drop, policer terlalu kecil atau priority percent terlalu kecil. Drop di BRONZE tinggi itu by design. Jika customer komplain voice putus, periksa policer di PE ingress dulu. 90 persen kasus QoS SP adalah policer terlalu kecil, bukan core congestion.
 
-## Modul 7: High Availability SP, Redundancy, ISSU, Fast Reroute
+## Modul 7. High Availability SP, Redundancy, ISSU, Fast Reroute
 
 ### 7.1 Prinsip HA SP
 
@@ -1031,7 +1031,7 @@ interface GigabitEthernet0/0/1
 ```
 
 
-## Modul 8: Operasi SP, SLA, Monitoring, Telemetry
+## Modul 8. Operasi SP, SLA, Monitoring, Telemetry
 
 ### 8.1 SLA SP
 
@@ -1120,7 +1120,7 @@ policy-map COPP-SP
  police 1000000 conform-action transmit exceed-action drop
 ```
 
-## Modul 9: STUDI KASUS ISP, Implementasi Full P / PE / RR / ASBR / CE
+## Modul 9. STUDI KASUS ISP, Implementasi Full P / PE / RR / ASBR / CE
 
 ### 9.1 Gambaran Bisnis dan Tantangan
 
